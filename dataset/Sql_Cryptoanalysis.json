@@ -1,0 +1,33 @@
+{
+	"name": "Sql_Cryptoanalysis",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sql_Cryptoanalysis",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string",
+				"defaultValue": "swyftx"
+			},
+			"table": {
+				"type": "string",
+				"defaultValue": "assets"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().table",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

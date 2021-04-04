@@ -1,0 +1,39 @@
+{
+	"name": "ResultsJSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "cryptoanalysis_transactions",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container": {
+				"type": "string",
+				"defaultValue": "transactions"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "assets.json"
+			}
+		},
+		"folder": {
+			"name": "Sink"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

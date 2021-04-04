@@ -1,0 +1,9 @@
+{
+	"name": "cryptoanalysis",
+	"location": "australiaeast",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5728c3e7-d891-4c7f-a5d7-27c0d3ed1aa9",
+		"tenantId": "2759b228-1d4c-4856-bc4c-a1381a0935a0"
+	}
+}

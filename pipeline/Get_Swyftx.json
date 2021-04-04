@@ -1,0 +1,136 @@
+{
+	"name": "Get_Swyftx",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get config",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "cfg",
+							"table": "swyftx"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "For Each endpoint",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get config",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get config').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 2,
+					"activities": [
+						{
+							"name": "Get results_copy",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"additionalHeaders": {
+										"Authorization": {
+											"value": "Bearer @{variables('accessToken')}",
+											"type": "Expression"
+										}
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SwyftxAPI",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "@item().relativeURL",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ResultsJSON",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@item().container",
+											"type": "Expression"
+										},
+										"fileName": {
+											"value": "@item().fileName",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"accessToken": {
+				"type": "String",
+				"defaultValue": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJrVTRRelF6TlRaQk5rTkNORGsyTnpnME9EYzNOVEZGTWpaRE9USTRNalV6UXpVNE1UUkROUSJ9.eyJodHRwczovL3N3eWZ0eC5jb20uYXUvLWp0aSI6IjhlNDBhNzgyLWNkOWYtNGM5Yy1hNTdmLWQxMDNlNzI1NmZmYyIsImh0dHBzOi8vc3d5ZnR4LmNvbS5hdS8tbWZhX2VuYWJsZWQiOnRydWUsImh0dHBzOi8vc3d5ZnR4LmNvbS5hdS8tY291bnRyeV9uYW1lIjoiQXVzdHJhbGlhIiwiaHR0cHM6Ly9zd3lmdHguY29tLmF1Ly1jaXR5X25hbWUiOiJTeWRuZXkiLCJpc3MiOiJodHRwczovL3N3eWZ0eC5hdS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWYyZDIzZTdiYmZmNDAwMDM3NmQyMzZlIiwiYXVkIjoiaHR0cHM6Ly9hcGkuc3d5ZnR4LmNvbS5hdS8iLCJpYXQiOjE2MTYwNjk4MTgsImV4cCI6MTYxNjY3NDYxOCwiYXpwIjoiRVF3M2ZhQXhPVGhSWVRaeXkxdWxaRGk4REhSQVlkRU8iLCJzY29wZSI6ImFwcC5hY2NvdW50LnJlYWQgYXBwLnJlY3VycmluZy1vcmRlcnMucmVhZCBhcHAuYWRkcmVzcy5yZWFkIGFwcC5mdW5kcy5yZWFkIGFwcC5vcmRlcnMucmVhZCBhcHAuYXBpLnJlYWQgb2ZmbGluZV9hY2Nlc3MiLCJndHkiOiJwYXNzd29yZCJ9.JenjhHz-AGIhLU_9BiScFrWZLCZXB8USj3NX_lLVbHLaOgtYP4LCEbjMcMWF4d6vbk461qNeZo-Yq6tDWgrism0KLqfio2FBta0VXwbGcuqmn2wKEb_2gCbFg9E8ciNXebIBP16LzaTf0yQPSEfcoZCi2ZHP1ZXrhB00yqAT3mMkWVLcsKFgXwXWPMuVpj3MNieTZCHh299leyFE_v0f-juhm0q4UQKjMHEdF5vIkeSv9GU_JzhOjESrwFOr6jUkbjY694wQPTc9d8a6Tc4TmSJVQlo1VfIuyApvSgnYLysJLiTPR1qPcr4DopW45R8Ks9y-a7RIbjBkXRRw9Nct3g"
+			}
+		},
+		"folder": {
+			"name": "To BLOB"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-18T12:23:10Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

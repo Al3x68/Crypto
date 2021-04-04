@@ -1,0 +1,245 @@
+{
+	"name": "Get_ETH_Transactions",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get addresses",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "swyftx",
+							"table": "vw_withdrawals_networks"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Filter ETH",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Get addresses",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get addresses').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@startswith(item().network,'ETH')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "For Each ETH Address",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter ETH",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter ETH').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Get ETH Transactions",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET"
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "EtherscanAPI",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "?module=account&action=txlist&address=@{item().address}&startblock=0&endblock=999999999&sort=asc&apikey=X5YJPAVQIVXPKX63E81WGSTZZJMG7H62CV",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ResultsJSON",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "etherscan",
+										"fileName": "tx_ETH.json"
+									}
+								}
+							]
+						},
+						{
+							"name": "Get Internal Transactions",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET"
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "EtherscanAPI",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "?module=account&action=txlistinternal&address=@{item().address}&startblock=0&endblock=999999999&sort=asc&apikey=X5YJPAVQIVXPKX63E81WGSTZZJMG7H62CV",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ResultsJSON",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "etherscan",
+										"fileName": "tx_Internal.json"
+									}
+								}
+							]
+						},
+						{
+							"name": "Get ERC20 Transactions",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET"
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "EtherscanAPI",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "?module=account&action=tokentx&address=@{item().address}&startblock=0&endblock=999999999&sort=asc&apikey=X5YJPAVQIVXPKX63E81WGSTZZJMG7H62CV",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ResultsJSON",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "etherscan",
+										"fileName": "tx_ERC20.json"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "To BLOB"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-11T07:17:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

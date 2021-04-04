@@ -1,0 +1,14 @@
+{
+	"name": "Swyftx",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Swyftx REST API",
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://api.swyftx.com.au/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

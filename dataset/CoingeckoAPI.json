@@ -1,0 +1,25 @@
+{
+	"name": "CoingeckoAPI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CoingeckoAPI",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "/coins/btc/history?id=bitcoin&vs_currency=usd&days=max"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().relativeURL",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

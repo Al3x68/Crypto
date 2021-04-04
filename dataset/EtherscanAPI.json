@@ -1,0 +1,25 @@
+{
+	"name": "EtherscanAPI",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Etherscan",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"relativeURL": {
+				"type": "string",
+				"defaultValue": "?module=account&action=txlist&address=0xf0387c3C6c90a964B69BBBdA7910f430D88069BB&startblock=0&endblock=999999999&sort=asc&apikey=X5YJPAVQIVXPKX63E81WGSTZZJMG7H62CV"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().relativeURL",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

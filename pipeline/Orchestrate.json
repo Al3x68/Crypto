@@ -1,0 +1,216 @@
+{
+	"name": "Orchestrate",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get_Coingecko_Assets",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Get_Coingecko_Assets",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Get_Swyftx",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Get_Swyftx",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Get_ETH_Transactions",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Import_Swyftx",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Get_ETH_Transactions",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Import_Swyftx",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get_Swyftx",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Import_Swyftx",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Import_ETH_Transactions",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get_ETH_Transactions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Import_ETH_Transactions",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Get_Prices",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Import_ETH_Transactions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Get_Prices",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Import_Prices",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get_Prices",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Truncate Prices",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Import_Prices",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Truncate Prices",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[cko].[usp_truncate_prices]"
+				},
+				"linkedServiceName": {
+					"referenceName": "Sql_Cryptoanalysis",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Load Transactions",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Import_Prices",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_load_transactions]"
+				},
+				"linkedServiceName": {
+					"referenceName": "Sql_Cryptoanalysis",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Upadte Capital Gain",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Load Transactions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[usp_update_CapitalGain]"
+				},
+				"linkedServiceName": {
+					"referenceName": "Sql_Cryptoanalysis",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-03-17T11:47:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

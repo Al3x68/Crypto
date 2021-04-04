@@ -1,0 +1,592 @@
+{
+	"name": "Import_ETH_Transactions",
+	"properties": {
+		"activities": [
+			{
+				"name": "Import ETH Transactions",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE eth.tx_eth",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['blockNumber']"
+								},
+								"sink": {
+									"name": "blockNumber"
+								}
+							},
+							{
+								"source": {
+									"path": "['timeStamp']"
+								},
+								"sink": {
+									"name": "timeStamp"
+								}
+							},
+							{
+								"source": {
+									"path": "['hash']"
+								},
+								"sink": {
+									"name": "hash"
+								}
+							},
+							{
+								"source": {
+									"path": "['nonce']"
+								},
+								"sink": {
+									"name": "nonce"
+								}
+							},
+							{
+								"source": {
+									"path": "['blockHash']"
+								},
+								"sink": {
+									"name": "blockHash"
+								}
+							},
+							{
+								"source": {
+									"path": "['transactionIndex']"
+								},
+								"sink": {
+									"name": "transactionIndex"
+								}
+							},
+							{
+								"source": {
+									"path": "['from']"
+								},
+								"sink": {
+									"name": "from"
+								}
+							},
+							{
+								"source": {
+									"path": "['to']"
+								},
+								"sink": {
+									"name": "to"
+								}
+							},
+							{
+								"source": {
+									"path": "['value']"
+								},
+								"sink": {
+									"name": "value"
+								}
+							},
+							{
+								"source": {
+									"path": "['gas']"
+								},
+								"sink": {
+									"name": "gas"
+								}
+							},
+							{
+								"source": {
+									"path": "['gasPrice']"
+								},
+								"sink": {
+									"name": "gasPrice"
+								}
+							},
+							{
+								"source": {
+									"path": "['isError']"
+								},
+								"sink": {
+									"name": "isError"
+								}
+							},
+							{
+								"source": {
+									"path": "['txreceipt_status']"
+								},
+								"sink": {
+									"name": "txreceipt_status"
+								}
+							},
+							{
+								"source": {
+									"path": "['input']"
+								},
+								"sink": {
+									"name": "input"
+								}
+							},
+							{
+								"source": {
+									"path": "['contractAddress']"
+								},
+								"sink": {
+									"name": "contractAddress"
+								}
+							},
+							{
+								"source": {
+									"path": "['cumulativeGasUsed']"
+								},
+								"sink": {
+									"name": "cumulativeGasUsed"
+								}
+							},
+							{
+								"source": {
+									"path": "['gasUsed']"
+								},
+								"sink": {
+									"name": "gasUsed"
+								}
+							},
+							{
+								"source": {
+									"path": "['confirmations']"
+								},
+								"sink": {
+									"name": "confirmations"
+								}
+							}
+						],
+						"collectionReference": "$['result']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "etherscan",
+							"fileName": "tx_ETH.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "eth",
+							"table": "tx_eth"
+						}
+					}
+				]
+			},
+			{
+				"name": "Import Internal Transactions",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE eth.tx_internal",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['blockNumber']"
+								},
+								"sink": {
+									"name": "blockNumber"
+								}
+							},
+							{
+								"source": {
+									"path": "['timeStamp']"
+								},
+								"sink": {
+									"name": "timeStamp"
+								}
+							},
+							{
+								"source": {
+									"path": "['hash']"
+								},
+								"sink": {
+									"name": "hash"
+								}
+							},
+							{
+								"source": {
+									"path": "['from']"
+								},
+								"sink": {
+									"name": "from"
+								}
+							},
+							{
+								"source": {
+									"path": "['to']"
+								},
+								"sink": {
+									"name": "to"
+								}
+							},
+							{
+								"source": {
+									"path": "['value']"
+								},
+								"sink": {
+									"name": "value"
+								}
+							},
+							{
+								"source": {
+									"path": "['contractAddress']"
+								},
+								"sink": {
+									"name": "contractAddress"
+								}
+							},
+							{
+								"source": {
+									"path": "['input']"
+								},
+								"sink": {
+									"name": "input"
+								}
+							},
+							{
+								"source": {
+									"path": "['type']"
+								},
+								"sink": {
+									"name": "type"
+								}
+							},
+							{
+								"source": {
+									"path": "['gas']"
+								},
+								"sink": {
+									"name": "gas"
+								}
+							},
+							{
+								"source": {
+									"path": "['gasUsed']"
+								},
+								"sink": {
+									"name": "gasUsed"
+								}
+							},
+							{
+								"source": {
+									"path": "['traceId']"
+								},
+								"sink": {
+									"name": "traceId"
+								}
+							},
+							{
+								"source": {
+									"path": "['isError']"
+								},
+								"sink": {
+									"name": "isError"
+								}
+							},
+							{
+								"source": {
+									"path": "['errCode']"
+								},
+								"sink": {
+									"name": "errCode"
+								}
+							}
+						],
+						"collectionReference": "$['result']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "etherscan",
+							"fileName": "tx_Internal.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "eth",
+							"table": "tx_internal"
+						}
+					}
+				]
+			},
+			{
+				"name": "Import ERC20 Transactions",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE eth.tx_erc20",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['blockNumber']"
+								},
+								"sink": {
+									"name": "blockNumber"
+								}
+							},
+							{
+								"source": {
+									"path": "['timeStamp']"
+								},
+								"sink": {
+									"name": "timeStamp"
+								}
+							},
+							{
+								"source": {
+									"path": "['hash']"
+								},
+								"sink": {
+									"name": "hash"
+								}
+							},
+							{
+								"source": {
+									"path": "['nonce']"
+								},
+								"sink": {
+									"name": "nonce"
+								}
+							},
+							{
+								"source": {
+									"path": "['blockHash']"
+								},
+								"sink": {
+									"name": "blockHash"
+								}
+							},
+							{
+								"source": {
+									"path": "['from']"
+								},
+								"sink": {
+									"name": "from"
+								}
+							},
+							{
+								"source": {
+									"path": "['contractAddress']"
+								},
+								"sink": {
+									"name": "contractAddress"
+								}
+							},
+							{
+								"source": {
+									"path": "['to']"
+								},
+								"sink": {
+									"name": "to"
+								}
+							},
+							{
+								"source": {
+									"path": "['value']"
+								},
+								"sink": {
+									"name": "value"
+								}
+							},
+							{
+								"source": {
+									"path": "['tokenName']"
+								},
+								"sink": {
+									"name": "tokenName"
+								}
+							},
+							{
+								"source": {
+									"path": "['tokenSymbol']"
+								},
+								"sink": {
+									"name": "tokenSymbol"
+								}
+							},
+							{
+								"source": {
+									"path": "['tokenDecimal']"
+								},
+								"sink": {
+									"name": "tokenDecimal"
+								}
+							},
+							{
+								"source": {
+									"path": "['transactionIndex']"
+								},
+								"sink": {
+									"name": "transactionIndex"
+								}
+							},
+							{
+								"source": {
+									"path": "['gas']"
+								},
+								"sink": {
+									"name": "gas"
+								}
+							},
+							{
+								"source": {
+									"path": "['gasPrice']"
+								},
+								"sink": {
+									"name": "gasPrice"
+								}
+							},
+							{
+								"source": {
+									"path": "['gasUsed']"
+								},
+								"sink": {
+									"name": "gasUsed"
+								}
+							},
+							{
+								"source": {
+									"path": "['cumulativeGasUsed']"
+								},
+								"sink": {
+									"name": "cumulativeGasUsed"
+								}
+							},
+							{
+								"source": {
+									"path": "['input']"
+								},
+								"sink": {
+									"name": "input"
+								}
+							},
+							{
+								"source": {
+									"path": "['confirmations']"
+								},
+								"sink": {
+									"name": "confirmations"
+								}
+							}
+						],
+						"collectionReference": "$['result']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "etherscan",
+							"fileName": "tx_ERC20.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "eth",
+							"table": "tx_erc20"
+						}
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-03-11T08:32:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

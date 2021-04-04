@@ -1,0 +1,718 @@
+{
+	"name": "Import_Swyftx",
+	"properties": {
+		"activities": [
+			{
+				"name": "Import assets",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": true
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE swyftx.assets",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['code']"
+								},
+								"sink": {
+									"name": "code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['name']"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['assetType']"
+								},
+								"sink": {
+									"name": "assetType",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['primary']"
+								},
+								"sink": {
+									"name": "primary",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['secondary']"
+								},
+								"sink": {
+									"name": "secondary",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['deposit_enabled']"
+								},
+								"sink": {
+									"name": "deposit_enabled",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['withdraw_enabled']"
+								},
+								"sink": {
+									"name": "withdraw_enabled",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['min_deposit']"
+								},
+								"sink": {
+									"name": "min_deposit",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['min_withdrawal']"
+								},
+								"sink": {
+									"name": "min_withdrawal",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['mining_fee']"
+								},
+								"sink": {
+									"name": "mining_fee",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['tradable']"
+								},
+								"sink": {
+									"name": "tradable",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['min_confirmations']"
+								},
+								"sink": {
+									"name": "min_confirmations",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['price_scale']"
+								},
+								"sink": {
+									"name": "price_scale",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['minimum_order_increment']"
+								},
+								"sink": {
+									"name": "minimum_order_increment",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['minimum_order']"
+								},
+								"sink": {
+									"name": "minimum_order",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['minWithdrawalIncrementC']"
+								},
+								"sink": {
+									"name": "minWithdrawalIncrementC",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['minWithdrawalIncrementE']"
+								},
+								"sink": {
+									"name": "minWithdrawalIncrementE",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['subAssetOf']"
+								},
+								"sink": {
+									"name": "subAssetOf",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['contract']"
+								},
+								"sink": {
+									"name": "contract",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['assetDepositScale']"
+								},
+								"sink": {
+									"name": "assetDepositScale",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['delisting']"
+								},
+								"sink": {
+									"name": "delisting",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['buyDisabled']"
+								},
+								"sink": {
+									"name": "buyDisabled",
+									"type": "Int64"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "swyftx",
+							"fileName": "assets.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "swyftx",
+							"table": "assets"
+						}
+					}
+				]
+			},
+			{
+				"name": "Import orders",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": true
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": {
+							"value": "TRUNCATE TABLE swyftx.orders",
+							"type": "Expression"
+						},
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['orderUuid']"
+								},
+								"sink": {
+									"name": "orderUuid",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['order_type']"
+								},
+								"sink": {
+									"name": "order_type",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['primary_asset']"
+								},
+								"sink": {
+									"name": "primary_asset",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['secondary_asset']"
+								},
+								"sink": {
+									"name": "secondary_asset",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['quantity_asset']"
+								},
+								"sink": {
+									"name": "quantity_asset",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['quantity']"
+								},
+								"sink": {
+									"name": "quantity",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['trigger']"
+								},
+								"sink": {
+									"name": "trigger",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['status']"
+								},
+								"sink": {
+									"name": "status",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['created_time']"
+								},
+								"sink": {
+									"name": "created_time",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['updated_time']"
+								},
+								"sink": {
+									"name": "updated_time",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['amount']"
+								},
+								"sink": {
+									"name": "amount",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['total']"
+								},
+								"sink": {
+									"name": "total",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['rate']"
+								},
+								"sink": {
+									"name": "rate",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['audValue']"
+								},
+								"sink": {
+									"name": "audValue",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['feeAmount']"
+								},
+								"sink": {
+									"name": "feeAmount",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "['feeAsset']"
+								},
+								"sink": {
+									"name": "feeAsset",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "['feeAudValue']"
+								},
+								"sink": {
+									"name": "feeAudValue",
+									"type": "Double"
+								}
+							}
+						],
+						"collectionReference": "$['orders']",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "swyftx",
+							"fileName": "orders.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "swyftx",
+							"table": "orders"
+						}
+					}
+				]
+			},
+			{
+				"name": "Import withdrawals",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": true
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": {
+							"value": "TRUNCATE TABLE swyftx.withdrawals",
+							"type": "Expression"
+						},
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['withdrawalId']"
+								},
+								"sink": {
+									"name": "withdrawalId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['transactionId']"
+								},
+								"sink": {
+									"name": "transactionId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['status']"
+								},
+								"sink": {
+									"name": "status",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['assetId']"
+								},
+								"sink": {
+									"name": "assetId",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['amount']"
+								},
+								"sink": {
+									"name": "amount",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['audValue']"
+								},
+								"sink": {
+									"name": "audValue",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['credited_asset']"
+								},
+								"sink": {
+									"name": "credited_asset",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['credited_amount']"
+								},
+								"sink": {
+									"name": "credited_amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['feeAmount']"
+								},
+								"sink": {
+									"name": "feeAmount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['feeAssetId']"
+								},
+								"sink": {
+									"name": "feeAssetId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['feeAudValue']"
+								},
+								"sink": {
+									"name": "feeAudValue",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['txFeeAmount']"
+								},
+								"sink": {
+									"name": "txFeeAmount",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['txFeeAssetId']"
+								},
+								"sink": {
+									"name": "txFeeAssetId",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['txFeeAudValue']"
+								},
+								"sink": {
+									"name": "txFeeAudValue",
+									"type": "Double"
+								}
+							},
+							{
+								"source": {
+									"path": "$['created']"
+								},
+								"sink": {
+									"name": "created",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['updated']"
+								},
+								"sink": {
+									"name": "updated",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['label']"
+								},
+								"sink": {
+									"name": "label",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address_details']['address']"
+								},
+								"sink": {
+									"name": "address",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ResultsJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "swyftx",
+							"fileName": "withdrawals.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Sql_Cryptoanalysis",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "swyftx",
+							"table": "withdrawals"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "To DB"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-03-11T06:37:57Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
